@@ -1,0 +1,41 @@
+HEHE:
+  InProgress:
+    Target: In Progress
+    Steps:
+      Backlog:
+        - Grooming
+        - Ready For Sprint
+        - Taken for This Sprint
+        - Start Work
+      Grooming:
+        - Ready For Sprint
+        - Taken for This Sprint
+        - Start Work
+      Ready For Sprint:
+        - Taken for This Sprint
+        - Start Work
+      To Do:
+        - Start Work
+  CodeReview:
+    Target: Code Review
+    Steps:
+      Backlog:
+        - Grooming
+        - Ready For Sprint
+        - Taken for This Sprint
+        - Start Work
+        - Finished Development
+      Grooming:
+        - Ready For Sprint
+        - Taken for This Sprint
+        - Start Work
+        - Finished Development
+      Ready For Sprint:
+        - Taken for This Sprint
+        - Start Work
+        - Finished Development
+      To Do:
+        - Start Work
+        - Finished Development
+      In Progress:
+        - Finished Development
