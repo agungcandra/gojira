@@ -7,7 +7,10 @@ import (
 	"github.com/agungcandra/gojira/entity"
 )
 
-const ExcludePush = `(master|release\-|deploy\-)`
+const (
+	ExcludePush            = `(master|release\-|deploy\-)`
+	MergeRequestOpenAction = "open"
+)
 
 type HookService struct {
 	transitionService TransitionInterface
@@ -28,17 +31,13 @@ func NewHookService(transitionService TransitionInterface,
 	}
 }
 
-func (ms *HookService) MergeRequest(mergeRequest *entity.MergeRequestRequest) error {
-	issues := ms.extractorService.ExtractFromMergeRequest(&mergeRequest.ObjectAttribute)
-
-	for _, issue := range issues {
-		err := ms.transitionService.UpdateState(issue, gojira.CodeReviewState, ms.credential)
-		if err != nil {
-			return err
-		}
+func (ms *HookService) MergeRequest(mergeRequest *entity.MergeRequestRequest) []error {
+	if mergeRequest.ObjectAttribute.Action != MergeRequestOpenAction {
+		return nil
 	}
 
-	return nil
+	issues := ms.extractorService.ExtractFromMergeRequest(&mergeRequest.ObjectAttribute)
+	return ms.UpdateIssues(issues, gojira.CodeReviewState)
 }
 
 func (ms *HookService) Push(pushRequest *entity.PushRequest) []error {
@@ -48,11 +47,15 @@ func (ms *HookService) Push(pushRequest *entity.PushRequest) []error {
 	}
 
 	issues := ms.extractorService.ExtractFromPushRequest(pushRequest)
+	return ms.UpdateIssues(issues, gojira.InProgressState)
+}
+
+func (ms *HookService) UpdateIssues(issues []string, state string) []error {
 	ch := make(chan error, len(issues))
 	result := make([]error, 0)
 
 	for _, issue := range issues {
-		ch <- ms.transitionService.UpdateState(issue, gojira.InProgressState, ms.credential)
+		ch <- ms.transitionService.UpdateState(issue, state, ms.credential)
 	}
 
 	for range issues {

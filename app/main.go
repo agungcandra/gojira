@@ -40,6 +40,7 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.POST("/hook", handle.Hook)
 	e.POST("/merge_request", handle.MergeRequest)
 	e.POST("/push", handle.PushRequest)
 

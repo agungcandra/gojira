@@ -14,12 +14,5 @@ type MergeRequestAttribute struct {
 	SourceProjectID int    `json:"source_project_id"`
 	Title           string `json:"title"`
 	LastCommit      Commit `json:"last_commit"`
-}
-
-func (mr *MergeRequestAttribute) GetBranch() string {
-	return mr.SourceBranch
-}
-
-func (mr *MergeRequestAttribute) GetTitle() string {
-	return mr.Title
+	Action          string `json:"action"`
 }

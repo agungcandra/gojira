@@ -8,7 +8,7 @@ type TransitionInterface interface {
 }
 
 type HookInterface interface {
-	MergeRequest(mergeRequest *entity.MergeRequestRequest) error
+	MergeRequest(mergeRequest *entity.MergeRequestRequest) []error
 	Push(pushRequest *entity.PushRequest) []error
 }
 
