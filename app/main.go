@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -32,17 +31,17 @@ func main() {
 	hookServ := service.NewHookService(transitionServ, extractorServ, *workflowServ, cred)
 	handle := handler.NewGojiraHandler(hookServ)
 
-	steps, err := workflowServ.Find("SUBS-4791", "InProgress", cred)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(steps)
+	server := echo.New()
+	server.Use(
+		middleware.Recover(),
+		middleware.Logger(),
+		middleware.RequestID(),
+	)
+	server.HideBanner = true
 
-	e := echo.New()
-	e.Use(middleware.Logger())
-	e.POST("/hook", handle.Hook)
-	e.POST("/merge_request", handle.MergeRequest)
-	e.POST("/push", handle.PushRequest)
+	server.POST("/hook", handle.Hook)
+	server.POST("/merge_request", handle.MergeRequest)
+	server.POST("/push", handle.PushRequest)
 
-	log.Fatal(e.Start(":8000"))
+	log.Fatal(server.Start(":8000"))
 }
